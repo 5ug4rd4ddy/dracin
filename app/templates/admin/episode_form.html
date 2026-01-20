@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{% if episode %}Edit{% else %}Add{% endif %} Episode{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <div class="max-w-2xl mx-auto bg-card-dark p-8 rounded-xl shadow-lg">
+        <div class="flex items-center gap-2 mb-6">
+            <a href="{{ url_for('admin.movie_episodes', movie_id=movie.id) }}" class="text-gray-400 hover:text-white">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <h2 class="text-2xl font-bold text-white">{% if episode %}Edit{% else %}Add New{% endif %} Episode</h2>
+        </div>
+        
+        <p class="mb-6 text-gray-400">For Movie: <span class="text-white font-bold">{{ movie.title }}</span></p>
+
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label for="episode_number" class="block mb-2 text-sm font-medium text-gray-300">Episode Number</label>
+                    <input type="number" id="episode_number" name="episode_number" value="{{ episode.episode_number if episode else '' }}" required
+                        class="bg-surface-dark border border-gray-600 text-white text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+                </div>
+                
+                <div>
+                    <label for="title" class="block mb-2 text-sm font-medium text-gray-300">Title (Optional)</label>
+                    <input type="text" id="title" name="title" value="{{ episode.title if episode else '' }}"
+                        class="bg-surface-dark border border-gray-600 text-white text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <label for="video_url" class="block mb-2 text-sm font-medium text-gray-300">Video URL</label>
+                <input type="url" id="video_url" name="video_url" value="{{ episode.video_url if episode else '' }}" required
+                    class="bg-surface-dark border border-gray-600 text-white text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+                <p class="mt-2 text-sm text-gray-400">Direct link to the video file or stream.</p>
+            </div>
+            
+            <div class="mb-6">
+                <div class="flex items-center">
+                    <input id="is_free" name="is_free" type="checkbox" {% if episode and episode.is_free %}checked{% endif %}
+                        class="w-4 h-4 text-primary bg-gray-700 border-gray-600 rounded focus:ring-primary ring-offset-gray-800 focus:ring-2">
+                    <label for="is_free" class="ml-2 text-sm font-medium text-gray-300">Is Free? (Available without subscription)</label>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-end gap-4">
+                <a href="{{ url_for('admin.movie_episodes', movie_id=movie.id) }}" class="text-gray-400 hover:text-white font-medium">Cancel</a>
+                <button type="submit" class="bg-primary text-black font-bold py-2 px-6 rounded-lg hover:bg-yellow-400 transition-colors">
+                    {% if episode %}Update Episode{% else %}Create Episode{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

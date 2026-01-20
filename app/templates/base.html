@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html class="dark" lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}{{ site_settings.site_title if site_settings else 'DracinLovers' }}{% endblock %} - {{ site_settings.site_title if site_settings else 'DracinLovers' }}</title>
+    <meta name="description" content="{% block description %}{{ site_settings.site_description if site_settings else 'Nonton Drama China Sub Indo Terlengkap' }}{% endblock %}">
+    <meta name="keywords" content="{{ site_settings.meta_keywords if site_settings else 'drama china, dracin, sub indo' }}">
+    <meta name="author" content="{{ site_settings.site_title if site_settings else 'DracinLovers' }}">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta property="og:title" content="{% block og_title %}{{ site_settings.site_title if site_settings else 'DracinLovers' }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ site_settings.site_description if site_settings else 'Nonton Drama China Sub Indo Terlengkap' }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ site_settings.logo_url if site_settings and site_settings.logo_url else url_for('static', filename='img/logo.png', _external=True) }}{% endblock %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.url }}">
+    <meta property="twitter:title" content="{% block twitter_title %}{{ site_settings.site_title if site_settings else 'DracinLovers' }}{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}{{ site_settings.site_description if site_settings else 'Nonton Drama China Sub Indo Terlengkap' }}{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{{ site_settings.logo_url if site_settings and site_settings.logo_url else url_for('static', filename='img/logo.png', _external=True) }}{% endblock %}">
+
+    <!-- Favicon -->
+    {% if site_settings and site_settings.favicon_url %}
+    <link rel="icon" href="{{ site_settings.favicon_url }}">
+    {% endif %}
+
+    <!-- Google Search Console -->
+    {% if site_settings and site_settings.google_search_console_id %}
+    <meta name="google-site-verification" content="{{ site_settings.google_search_console_id }}" />
+    {% endif %}
+
+    <!-- Google Analytics -->
+    {% if site_settings and site_settings.google_analytics_id %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ site_settings.google_analytics_id }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '{{ site_settings.google_analytics_id }}');
+    </script>
+    {% endif %}
+
+    {% block json_ld %}{% endblock %}
+
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#FFD700",
+                        "background-light": "#F9FAFB",
+                        "background-dark": "#0A0A0B",
+                        "surface-dark": "#161618",
+                        "card-dark": "#1F1F22",
+                    },
+                    fontFamily: {
+                        display: ["Outfit", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.75rem",
+                        "xl": "1.25rem",
+                    },
+                },
+            },
+        };
+    </script>
+    <style type="text/tailwindcss">
+        body { font-family: 'Outfit', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hover-expand {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .poster-card:hover .hover-expand {
+            transform: translateY(-8px);
+        }
+        .gradient-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0) 100%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen">
+    
+    {% include 'includes/header.html' %}
+
+    <main class="min-h-screen">
+        <div class="px-6 lg:px-12 py-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="p-4 mb-4 text-sm rounded-lg {% if category == 'success' %}bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-400{% else %}bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-400{% endif %}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'includes/footer.html' %}
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-surface-dark/95 backdrop-blur-md border-t border-slate-800 z-50 px-6 py-3 lg:hidden flex justify-between items-center text-[10px] font-medium text-slate-400" style="padding-bottom: max(12px, env(safe-area-inset-bottom));">
+        <a href="{{ url_for('main.index') }}" class="flex flex-col items-center gap-1 hover:text-primary {{ 'text-primary' if request.endpoint == 'main.index' else '' }}">
+            <span class="material-symbols-outlined text-2xl">home</span>
+            <span>Home</span>
+        </a>
+        <a href="{{ url_for('main.profile', _anchor='pricing') }}" class="flex flex-col items-center gap-1 hover:text-primary {{ 'text-primary' if request.endpoint == 'main.pricing' else '' }}">
+            <span class="material-symbols-outlined text-2xl">monetization_on</span>
+            <span>Berlangganan</span>
+        </a>
+        <a href="{{ url_for('main.history') }}" class="flex flex-col items-center gap-1 hover:text-primary {{ 'text-primary' if request.endpoint == 'main.history' else '' }}">
+            <span class="material-symbols-outlined text-2xl">receipt_long</span>
+            <span>History</span>
+        </a>
+        <a href="{{ url_for('main.favorites') }}" class="flex flex-col items-center gap-1 hover:text-primary {{ 'text-primary' if request.endpoint == 'main.favorites' else '' }}">
+            <span class="material-symbols-outlined text-2xl">favorite</span>
+            <span>Favorite</span>
+        </a>
+        <a href="{{ url_for('main.profile') if current_user.is_authenticated else url_for('auth.login') }}" class="flex flex-col items-center gap-1 hover:text-primary {{ 'text-primary' if request.endpoint in ['main.profile', 'auth.login'] else '' }}">
+            <span class="material-symbols-outlined text-2xl">person</span>
+            <span>{{ 'Profile' if current_user.is_authenticated else 'Login' }}</span>
+        </a>
+    </nav>
+
+    {% if not current_user.is_authenticated or not current_user.subscription_end_date or current_user.subscription_end_date < now %}
+    <div class="hidden lg:block fixed bottom-6 right-6 z-40">
+        <a href="{{ url_for('main.profile', _anchor='pricing') }}" class="bg-primary hover:bg-yellow-400 text-black font-bold px-6 py-4 rounded-full shadow-2xl flex items-center gap-2 group transition-all transform hover:scale-105 no-underline">
+            <span class="material-symbols-outlined">workspace_premium</span>
+            <span>Berlangganan</span>
+            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </a>
+    </div>
+    {% endif %}
+
+    <script>
+        async function toggleFavorite(event, movieId) {
+            event.preventDefault(); // Prevent default button behavior
+            
+            // Check if user is logged in
+            {% if not current_user.is_authenticated %}
+            window.location.href = "{{ url_for('auth.login') }}";
+            return;
+            {% endif %}
+        
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const response = await fetch(`/toggle-favorite/${movieId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const icons = document.querySelectorAll(`.fav-icon-${movieId}`);
+                    icons.forEach(icon => {
+                        if (data.status === 'added') {
+                            icon.textContent = 'favorite';
+                        } else {
+                            icon.textContent = 'favorite_border';
+                        }
+                    });
+                } else {
+                    console.error('Failed to toggle favorite');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

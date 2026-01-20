@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-12">
+    <div class="max-w-2xl mx-auto bg-card-dark rounded-2xl shadow-xl overflow-hidden border border-slate-700/50">
+        <!-- Header Profile -->
+        <div class="relative h-32 bg-gradient-to-r from-surface-dark to-black">
+            <div class="absolute -bottom-12 left-8">
+                <div class="w-24 h-24 rounded-full border-4 border-card-dark bg-surface-dark flex items-center justify-center text-3xl font-bold text-white shadow-lg">
+                    {{ current_user.name[:1].upper() }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="pt-16 px-8 pb-8">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">{{ current_user.name }}</h1>
+                    <p class="text-slate-400">{{ current_user.email }}</p>
+                </div>
+                <div class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
+                    {% if current_user.role == 'admin' %}bg-purple-500/20 text-purple-400
+                    {% else %}bg-blue-500/20 text-blue-400{% endif %}">
+                    {{ current_user.role }}
+                </div>
+            </div>
+            
+            <!-- Subscription Status -->
+            <div class="bg-surface-dark rounded-xl p-6 mb-8 border border-slate-700/50">
+                <h3 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">workspace_premium</span>
+                    Subscription Status
+                </h3>
+                
+                {% if current_user.subscription_end_date and current_user.subscription_end_date > now %}
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-400 font-bold mb-1">Active Premium</p>
+                            <p class="text-sm text-slate-400">Expires on {{ current_user.subscription_end_date.strftime('%d %B %Y %H:%M') }}</p>
+                        </div>
+                        <div class="text-right">
+                             <span class="block text-xs text-slate-500 mb-1">Remaining</span>
+                             <span class="font-mono text-xl font-bold text-white">{{ (current_user.subscription_end_date - now).days }} Days</span>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-400 font-medium mb-1">Free Plan</p>
+                            <p class="text-sm text-slate-500">Upgrade to unlock all premium content</p>
+                        </div>
+                        <a href="{{ url_for('main.pricing') }}" class="bg-primary hover:bg-yellow-400 text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                            Upgrade Now
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Account Actions -->
+            <div class="space-y-3">
+                <h3 class="text-lg font-semibold text-white mb-4">Account Settings</h3>
+                
+                <a href="{{ url_for('main.favorites') }}" class="flex items-center justify-between p-4 rounded-xl bg-surface-dark hover:bg-slate-800 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">favorite</span>
+                        <span class="text-slate-300 group-hover:text-white transition-colors">My Favorites</span>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-600 group-hover:text-white transition-colors">chevron_right</span>
+                </a>
+
+                <a href="{{ url_for('main.history') }}" class="flex items-center justify-between p-4 rounded-xl bg-surface-dark hover:bg-slate-800 transition-colors group">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors">receipt_long</span>
+                        <span class="text-slate-300 group-hover:text-white transition-colors">Transaction History</span>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-600 group-hover:text-white transition-colors">chevron_right</span>
+                </a>
+
+                <a href="{{ url_for('auth.logout') }}" class="flex items-center justify-between p-4 rounded-xl bg-surface-dark hover:bg-red-500/10 hover:border-red-500/50 border border-transparent transition-all group mt-4">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-slate-400 group-hover:text-red-500 transition-colors">logout</span>
+                        <span class="text-slate-300 group-hover:text-red-400 transition-colors">Logout</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Pricing Plans -->
+            <div id="pricing" class="mt-12">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-white">Pilih Paket Premium</h3>
+                    <span class="bg-blue-500/20 text-blue-400 text-xs font-bold px-3 py-1 rounded-full">Akses Tanpa Batas</span>
+                </div>
+                
+                <div class="space-y-4">
+                    {% for plan in plans %}
+                    <div class="bg-surface-dark border border-slate-700/50 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 hover:border-primary/50 transition-all relative overflow-hidden group">
+                        {% if loop.index == 2 or plan.duration_days == 365 %}
+                        <div class="absolute top-0 right-0 bg-primary text-black text-[10px] font-bold px-3 py-1 rounded-bl-lg shadow-lg z-10">
+                            BEST VALUE
+                        </div>
+                        {% endif %}
+                        
+                        <div class="flex items-center gap-4 w-full sm:w-auto">
+                            <div class="w-12 h-12 rounded-full {% if loop.index == 1 %}bg-yellow-500/10 text-yellow-500{% elif loop.index == 2 %}bg-primary/20 text-primary{% else %}bg-blue-500/10 text-blue-500{% endif %} flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-2xl">
+                                    {% if plan.duration_days >= 365 %}verified{% elif plan.duration_days >= 30 %}stars{% else %}star{% endif %}
+                                </span>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-white">{{ plan.name }}</h4>
+                                <p class="text-xs text-slate-400">Akses penuh semua fitur</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-2 sm:mt-0">
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-blue-400">Rp {{ "{:,.0f}".format(plan.price).replace(',', '.') }}</p>
+                            </div>
+                            <a href="{{ url_for('payment.checkout', plan_id=plan.id) }}" class="bg-slate-200 hover:bg-primary text-black font-bold px-6 py-2 rounded-full text-sm transition-colors min-w-[80px] text-center">
+                                Pilih
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

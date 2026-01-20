@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - {{ plan.name }}{% endblock %}
+
+{% block content %}
+<div class="py-12">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-card-dark rounded-xl border border-slate-700/50 overflow-hidden">
+            <div class="p-6 border-b border-slate-700/50">
+                <h1 class="text-2xl font-bold text-white">Checkout</h1>
+                <p class="text-slate-400 mt-1">Complete your subscription purchase</p>
+            </div>
+            
+            <div class="p-6">
+                <!-- Plan Details -->
+                <div class="bg-surface-dark rounded-xl p-4 mb-6 border border-slate-700/50">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-lg font-semibold text-white">{{ plan.name }}</h3>
+                        <span class="text-xl font-bold text-primary">Rp {{ "{:,.0f}".format(plan.price).replace(',', '.') }}</span>
+                    </div>
+                    <p class="text-slate-400 text-sm">Duration: {{ plan.duration_days }} days</p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- QRIS Info & Pay Button -->
+                    <div class="animate-fade-in">
+                        <div class="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-4">
+                            <div class="flex gap-3">
+                                <span class="material-symbols-outlined text-blue-400">info</span>
+                                <p class="text-sm text-blue-300">
+                                    You will be redirected to scan the QRIS code. Payment is verified automatically.
+                                </p>
+                            </div>
+                        </div>
+                        <form method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <input type="hidden" name="payment_method" value="qris">
+                            <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-black font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 hover:scale-[1.02] transform duration-200">
+                                <span>Pay Now via QRIS</span>
+                                <span class="material-symbols-outlined">arrow_forward</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

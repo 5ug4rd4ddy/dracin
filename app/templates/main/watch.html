@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Watch {{ movie.title }} - Episode {{ episode.episode_number }}{% endblock %}
+
+{% block content %}
+<div class="px-6 lg:px-12 py-8 max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-3xl lg:text-4xl font-bold mb-2">{{ movie.title }}</h1>
+        <p class="text-xl text-primary font-semibold flex items-center gap-2">
+            <span class="material-symbols-outlined">play_circle</span>
+            Episode {{ episode.episode_number }}
+        </p>
+    </div>
+
+    <!-- Video Player -->
+    <div class="relative w-full aspect-[9/16] md:aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 mb-8 border border-slate-800 group">
+        <video controls class="w-full h-full object-contain" poster="{{ url_for('main.proxy', url=movie.poster_url) }}" preload="metadata">
+            <source src="{{ url_for('main.proxy', url=episode.video_url) }}" type="video/mp4">
+            {% if episode.subtitle_url %}
+            <track label="Indonesia" kind="subtitles" srclang="id" src="{{ url_for('main.proxy', url=episode.subtitle_url) }}" default>
+            {% endif %}
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Navigation & Controls -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        {% set prev_ep = movie.episodes|selectattr("episode_number", "equalto", episode.episode_number - 1)|first %}
+        {% set next_ep = movie.episodes|selectattr("episode_number", "equalto", episode.episode_number + 1)|first %}
+
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            {% if prev_ep %}
+            <a href="{{ url_for('main.watch', episode_id=prev_ep.id) }}" class="flex-1 sm:flex-none bg-slate-800 hover:bg-slate-700 text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all border border-slate-700">
+                <span class="material-symbols-outlined">skip_previous</span> Previous
+            </a>
+            {% else %}
+            <button disabled class="flex-1 sm:flex-none bg-slate-900 text-slate-600 px-6 py-3 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed border border-slate-800">
+                <span class="material-symbols-outlined">skip_previous</span> Previous
+            </button>
+            {% endif %}
+
+            {% if next_ep %}
+            <a href="{{ url_for('main.watch', episode_id=next_ep.id) }}" class="flex-1 sm:flex-none bg-primary hover:bg-yellow-400 text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20">
+                Next <span class="material-symbols-outlined">skip_next</span>
+            </a>
+            {% else %}
+            <button disabled class="flex-1 sm:flex-none bg-slate-900 text-slate-600 px-6 py-3 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed border border-slate-800">
+                Next <span class="material-symbols-outlined">skip_next</span>
+            </button>
+            {% endif %}
+        </div>
+        
+        <div class="flex items-center gap-3">
+             <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="text-slate-400 hover:text-white flex items-center gap-2 transition-colors px-4 py-2">
+                <span class="material-symbols-outlined">list</span> All Episodes
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

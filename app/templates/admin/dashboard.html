@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <h2 class="text-3xl font-bold text-white mb-8">Admin Dashboard</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Movies Card -->
+        <div class="bg-card-dark p-6 rounded-xl shadow-lg border border-surface-dark hover:border-primary transition-colors group relative overflow-hidden">
+            <div class="relative z-10">
+                <h5 class="text-gray-400 font-medium mb-2">Total Movies</h5>
+                <p class="text-4xl font-bold text-white mb-4">{{ total_movies }}</p>
+                <a href="{{ url_for('admin.movies') }}" class="inline-flex items-center text-primary font-bold hover:underline">
+                    Manage Movies <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+                </a>
+            </div>
+            <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-surface-dark group-hover:text-gray-800 transition-colors opacity-50">movie</span>
+        </div>
+
+        <!-- Users Card -->
+        <div class="bg-card-dark p-6 rounded-xl shadow-lg border border-surface-dark hover:border-green-500 transition-colors group relative overflow-hidden">
+            <div class="relative z-10">
+                <h5 class="text-gray-400 font-medium mb-2">Total Users</h5>
+                <p class="text-4xl font-bold text-white mb-4">{{ total_users }}</p>
+                <a href="{{ url_for('admin.users') }}" class="inline-flex items-center text-green-400 font-bold hover:underline">
+                    View Users <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+                </a>
+            </div>
+            <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-surface-dark group-hover:text-gray-800 transition-colors opacity-50">group</span>
+        </div>
+
+        <!-- Transactions Card -->
+        <div class="bg-card-dark p-6 rounded-xl shadow-lg border border-surface-dark hover:border-yellow-500 transition-colors group relative overflow-hidden">
+            <div class="relative z-10">
+                <h5 class="text-gray-400 font-medium mb-2">Transactions</h5>
+                <p class="text-4xl font-bold text-white mb-4">{{ total_transactions }}</p>
+                <a href="{{ url_for('admin.transactions') }}" class="inline-flex items-center text-yellow-400 font-bold hover:underline">
+                    View Transactions <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+                </a>
+            </div>
+            <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-surface-dark group-hover:text-gray-800 transition-colors opacity-50">payments</span>
+        </div>
+
+        <!-- Plans Card -->
+        <div class="bg-card-dark p-6 rounded-xl shadow-lg border border-surface-dark hover:border-purple-500 transition-colors group relative overflow-hidden">
+            <div class="relative z-10">
+                <h5 class="text-gray-400 font-medium mb-2">Subscription Plans</h5>
+                <p class="text-4xl font-bold text-white mb-4">Manage</p>
+                <a href="{{ url_for('admin.plans') }}" class="inline-flex items-center text-purple-400 font-bold hover:underline">
+                    Edit Plans <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+                </a>
+            </div>
+            <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-surface-dark group-hover:text-gray-800 transition-colors opacity-50">sell</span>
+        </div>
+
+        <!-- Site Settings Card -->
+        <div class="bg-card-dark p-6 rounded-xl shadow-lg border border-surface-dark hover:border-blue-500 transition-colors group relative overflow-hidden">
+            <div class="relative z-10">
+                <h5 class="text-gray-400 font-medium mb-2">Configuration</h5>
+                <p class="text-4xl font-bold text-white mb-4">Settings</p>
+                <a href="{{ url_for('admin.settings') }}" class="inline-flex items-center text-blue-400 font-bold hover:underline">
+                    Manage Site <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+                </a>
+            </div>
+            <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-surface-dark group-hover:text-gray-800 transition-colors opacity-50">settings</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

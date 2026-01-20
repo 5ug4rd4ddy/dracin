@@ -1,0 +1,17 @@
+services:
+  web:
+    build: .
+    container_name: dracinlovers_app
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./instance:/app/instance
+      - ./migrations:/app/migrations
+      # Uncomment baris di bawah ini saat development agar perubahan kode langsung terlihat
+      # - .:/app
+    env_file:
+      - .env
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=production

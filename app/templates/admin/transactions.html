@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Transactions{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <h2 class="text-3xl font-bold text-white mb-6">Manage Transactions</h2>
+
+    <div class="overflow-x-auto bg-card-dark rounded-xl shadow-lg">
+        <table class="min-w-full text-left text-sm whitespace-nowrap">
+            <thead class="uppercase tracking-wider border-b border-surface-dark text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-4">ID</th>
+                    <th scope="col" class="px-6 py-4">User ID</th>
+                    <th scope="col" class="px-6 py-4">Amount</th>
+                    <th scope="col" class="px-6 py-4">Status</th>
+                    <th scope="col" class="px-6 py-4">Proof</th>
+                    <th scope="col" class="px-6 py-4">Created At</th>
+                    <th scope="col" class="px-6 py-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-surface-dark text-gray-200">
+                {% for t in transactions.items %}
+                <tr class="hover:bg-surface-dark transition-colors">
+                    <td class="px-6 py-4">{{ t.id }}</td>
+                    <td class="px-6 py-4">{{ t.user_id }}</td>
+                    <td class="px-6 py-4">Rp {{ "{:,.0f}".format(t.amount).replace(',', '.') }}</td>
+                    <td class="px-6 py-4">
+                        {% if t.status == 'paid' %}
+                        <span class="bg-green-900 text-green-300 py-1 px-2 rounded text-xs font-bold">PAID</span>
+                        {% elif t.status == 'pending' %}
+                        <span class="bg-yellow-900 text-yellow-300 py-1 px-2 rounded text-xs font-bold">PENDING</span>
+                        {% else %}
+                        <span class="bg-red-900 text-red-300 py-1 px-2 rounded text-xs font-bold">FAILED</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if t.payment_proof %}
+                        <a href="{{ t.payment_proof }}" target="_blank" class="text-blue-400 hover:underline">View Proof</a>
+                        {% else %}
+                        <span class="text-gray-500">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">{{ t.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="px-6 py-4 text-right">
+                        {% if t.status == 'pending' %}
+                        <form action="{{ url_for('admin.approve_transaction', id=t.id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to approve this transaction?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded text-xs font-bold transition-colors">Approve</button>
+                        </form>
+                        <span class="text-gray-500">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                        No transactions found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-6 flex justify-center">
+        <nav aria-label="Page navigation">
+            <ul class="flex list-style-none gap-2">
+                {% if transactions.has_prev %}
+                <li><a class="px-3 py-2 bg-surface-dark rounded hover:bg-gray-700 text-white" href="{{ url_for('admin.transactions', page=transactions.prev_num) }}">Previous</a></li>
+                {% endif %}
+                <li><span class="px-3 py-2 bg-primary text-black font-bold rounded">Page {{ transactions.page }} of {{ transactions.pages }}</span></li>
+                {% if transactions.has_next %}
+                <li><a class="px-3 py-2 bg-surface-dark rounded hover:bg-gray-700 text-white" href="{{ url_for('admin.transactions', page=transactions.next_num) }}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="px-6 lg:px-12 py-8 space-y-12 max-w-[1600px] mx-auto">
+    <section>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold">Search Results for "{{ query }}"</h2>
+        </div>
+        
+        {% if movies and movies.items %}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+            {% for movie in movies.items %}
+            <div class="poster-card relative group">
+                <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="block relative aspect-[2/3] rounded-xl overflow-hidden bg-surface-dark shadow-lg hover-expand">
+                    <img alt="{{ movie.title }}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" src="{{ url_for('main.proxy', url=movie.poster_url) }}"/>
+                    <div class="absolute top-3 left-3 bg-black/50 backdrop-blur-md px-2 py-1 rounded-md flex items-center gap-1">
+                        <span class="material-symbols-outlined text-primary text-sm">visibility</span>
+                        <span class="text-[10px] font-bold">{{ "{:,}".format(movie.views) }}</span>
+                    </div>
+                    <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                        <div class="w-full py-2 bg-primary text-black text-xs font-bold rounded-lg flex items-center justify-center gap-1">
+                            <span class="material-symbols-outlined text-sm">play_circle</span> Play Now
+                        </div>
+                    </div>
+                </a>
+                <div class="mt-3 flex justify-between items-start">
+                    <div class="overflow-hidden">
+                        <h3 class="font-semibold text-sm truncate"><a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="hover:text-primary transition-colors">{{ movie.title }}</a></h3>
+                        <p class="text-xs text-slate-500">{{ movie.episodes|length }} Episode</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        <div class="mt-8 flex justify-center">
+            <nav aria-label="Page navigation">
+                <ul class="flex gap-2">
+                    {% if movies.has_prev %}
+                    <li><a class="px-3 py-2 bg-slate-200 dark:bg-card-dark rounded-lg hover:bg-primary hover:text-black transition-colors" href="{{ url_for('main.search', q=query, page=movies.prev_num) }}">Previous</a></li>
+                    {% endif %}
+                    
+                    <li><span class="px-3 py-2 text-slate-500">Page {{ movies.page }} of {{ movies.pages }}</span></li>
+
+                    {% if movies.has_next %}
+                    <li><a class="px-3 py-2 bg-slate-200 dark:bg-card-dark rounded-lg hover:bg-primary hover:text-black transition-colors" href="{{ url_for('main.search', q=query, page=movies.next_num) }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% else %}
+        <div class="text-center py-20">
+            <span class="material-symbols-outlined text-6xl text-slate-600 mb-4">search_off</span>
+            <p class="text-xl text-slate-400">No results found for "{{ query }}"</p>
+            <a href="{{ url_for('main.index') }}" class="mt-6 inline-block px-6 py-2 bg-primary text-black font-bold rounded-lg hover:bg-yellow-400 transition-colors">Back to Home</a>
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

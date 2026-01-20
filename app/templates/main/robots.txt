@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /watch/
+Disallow: /profile/
+Disallow: /favorites/
+
+Sitemap: {{ request.url_root }}sitemap.xml

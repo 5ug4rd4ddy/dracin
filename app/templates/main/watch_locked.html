@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Premium Content{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex flex-col items-center justify-center px-6 py-12 text-center">
+    <div class="mb-6 p-6 bg-yellow-500/10 rounded-full border border-yellow-500/20 animate-pulse">
+        <span class="material-symbols-outlined text-6xl text-yellow-500">lock</span>
+    </div>
+    
+    <h2 class="text-3xl font-bold mb-4">This content is locked</h2>
+    <p class="text-slate-400 text-lg max-w-md mb-8">
+        You need a premium subscription to watch <span class="text-white font-semibold">{{ movie.title }}</span> - Episode {{ episode.episode_number }}.
+    </p>
+    
+    {% if not current_user.is_authenticated %}
+    <div class="space-y-4">
+        <a href="{{ url_for('auth.login') }}" class="inline-flex items-center gap-2 bg-primary text-black font-bold px-8 py-3 rounded-xl hover:bg-yellow-400 transition-all hover:scale-105">
+            <span class="material-symbols-outlined">login</span> Login to Continue
+        </a>
+        <p class="text-sm text-slate-500">
+            Don't have an account? <a href="{{ url_for('auth.login') }}" class="text-primary hover:underline">Register via Google</a>
+        </p>
+    </div>
+    {% else %}
+    <div class="space-y-4">
+        <p class="text-slate-300">Your subscription is inactive or has expired.</p>
+        <a href="{{ url_for('main.pricing') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold px-8 py-4 rounded-xl hover:shadow-lg hover:shadow-yellow-500/20 transition-all hover:scale-105">
+            <span class="material-symbols-outlined">diamond</span> Upgrade to Premium
+        </a>
+    </div>
+    {% endif %}
+    
+    <div class="mt-12">
+        <a href="{{ url_for('main.movie_detail', movie_id=movie.id) }}" class="text-slate-500 hover:text-white flex items-center gap-2 transition-colors group">
+            <span class="material-symbols-outlined group-hover:-translate-x-1 transition-transform">arrow_back</span> Back to Movie Details
+        </a>
+    </div>
+</div>
+{% endblock %}

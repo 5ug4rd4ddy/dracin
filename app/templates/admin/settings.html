@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Site Settings - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-12">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-white">Site Settings</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="text-slate-400 hover:text-white transition-colors">
+            <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="bg-card-dark rounded-xl border border-slate-800 p-8">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <!-- General Settings -->
+            <div class="border-b border-slate-800 pb-6">
+                <h2 class="text-xl font-semibold text-white mb-4">General Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-slate-400 mb-2">Site Title</label>
+                        <input type="text" name="site_title" value="{{ settings.site_title }}" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-2">Site Description</label>
+                        <input type="text" name="site_description" value="{{ settings.site_description }}" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO & Assets -->
+            <div class="border-b border-slate-800 pb-6">
+                <h2 class="text-xl font-semibold text-white mb-4">SEO & Assets</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-slate-400 mb-2">Meta Keywords (comma separated)</label>
+                        <textarea name="meta_keywords" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary h-24">{{ settings.meta_keywords }}</textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-slate-400 mb-2">Favicon</label>
+                            {% if settings.favicon_url %}
+                            <div class="mb-2">
+                                <img src="{{ settings.favicon_url }}" alt="Favicon" class="h-8 w-8 object-contain">
+                            </div>
+                            {% endif %}
+                            <input type="file" name="favicon" accept=".ico,.png,.jpg,.jpeg,.svg" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary">
+                            <p class="text-xs text-slate-500 mt-1">Leave empty to keep current favicon</p>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-2">Logo</label>
+                            {% if settings.logo_url %}
+                            <div class="mb-2">
+                                <img src="{{ settings.logo_url }}" alt="Logo" class="h-10 object-contain">
+                            </div>
+                            {% endif %}
+                            <input type="file" name="logo" accept=".png,.jpg,.jpeg,.svg" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary">
+                            <p class="text-xs text-slate-500 mt-1">Leave empty to keep current logo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics -->
+            <div class="pb-6">
+                <h2 class="text-xl font-semibold text-white mb-4">Analytics & Verification</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-slate-400 mb-2">Google Analytics ID (G-XXXXXXXXXX)</label>
+                        <input type="text" name="google_analytics_id" value="{{ settings.google_analytics_id or '' }}" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-2">Google Search Console ID</label>
+                        <input type="text" name="google_search_console_id" value="{{ settings.google_search_console_id or '' }}" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button type="submit" class="bg-primary hover:bg-yellow-400 text-black font-bold py-3 px-8 rounded-lg transition-colors">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

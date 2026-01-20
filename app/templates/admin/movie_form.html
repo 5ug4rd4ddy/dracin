@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{% if movie %}Edit{% else %}Add{% endif %} Movie{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <div class="max-w-2xl mx-auto bg-card-dark p-8 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-bold text-white mb-6">{% if movie %}Edit{% else %}Add New{% endif %} Movie</h2>
+        
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="mb-6">
+                <label for="title" class="block mb-2 text-sm font-medium text-gray-300">Title</label>
+                <input type="text" id="title" name="title" value="{{ movie.title if movie else '' }}" required
+                    class="bg-surface-dark border border-gray-600 text-white text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+            </div>
+            
+            <div class="mb-6">
+                <label for="description" class="block mb-2 text-sm font-medium text-gray-300">Description</label>
+                <textarea id="description" name="description" rows="4" required
+                    class="bg-surface-dark border border-gray-600 text-white text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">{{ movie.description if movie else '' }}</textarea>
+            </div>
+            
+            <div class="mb-6">
+                <label for="poster_url" class="block mb-2 text-sm font-medium text-gray-300">Poster URL</label>
+                <input type="url" id="poster_url" name="poster_url" value="{{ movie.poster_url if movie else '' }}" required
+                    class="bg-surface-dark border border-gray-600 text-white text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+                <p class="mt-2 text-sm text-gray-400">Enter the full URL of the movie poster image.</p>
+            </div>
+            
+            <div class="flex items-center justify-end gap-4">
+                <a href="{{ url_for('admin.movies') }}" class="text-gray-400 hover:text-white font-medium">Cancel</a>
+                <button type="submit" class="bg-primary text-black font-bold py-2 px-6 rounded-lg hover:bg-yellow-400 transition-colors">
+                    {% if movie %}Update Movie{% else %}Create Movie{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
