@@ -55,7 +55,42 @@ Langkah ini hanya perlu dilakukan satu kali saat pertama kali setup server.
 
 ---
 
-## Bagian 2: Setup Aplikasi (Sebagai USER)
+## Bagian 2: Setup GitHub Deploy Key (Untuk Private Repo)
+
+Agar server bisa melakukan `git clone` dan `git pull` dari repository private tanpa password, kita perlu menggunakan **SSH Deploy Key**.
+
+1.  Login sebagai user:
+    ```bash
+    ssh dracinsubindo@ip-server-anda
+    ```
+
+2.  Generate SSH Key baru (tekan Enter terus saat diminta passphrase):
+    ```bash
+    ssh-keygen -t ed25519 -C "server-deployment"
+    ```
+
+3.  Tampilkan public key yang baru dibuat:
+    ```bash
+    cat ~/.ssh/id_ed25519.pub
+    ```
+    *Copy output yang muncul (dimulai dari `ssh-ed25519` ...)*
+
+4.  Buka Repository GitHub Anda -> **Settings** -> **Deploy keys** -> **Add deploy key**.
+    - **Title**: Server CloudPanel (atau nama lain)
+    - **Key**: Paste kode yang tadi dicopy.
+    - **Allow write access**: Biarkan tidak dicentang (Read-only lebih aman).
+    - Klik **Add key**.
+
+5.  Test koneksi dari server:
+    ```bash
+    ssh -T git@github.com
+    ```
+    *Ketik `yes` jika ditanya "Are you sure you want to continue connecting?".*
+    *Jika berhasil, akan muncul pesan: "Hi username! You've successfully authenticated..."*
+
+---
+
+## Bagian 3: Setup Aplikasi (Sebagai USER)
 
 Lakukan langkah ini sebagai user aplikasi (misal: `dracinsubindo`).
 
@@ -70,13 +105,15 @@ Lakukan langkah ini sebagai user aplikasi (misal: `dracinsubindo`).
     ```
     *(Pastikan folder ini kosong atau hanya berisi file default CloudPanel yang bisa dihapus jika menimpa)*
 
-3.  Upload file proyek Anda ke direktori ini (bisa via SFTP/FileZilla atau Git Clone).
-    Pastikan file-file berikut ada:
-    - `Dockerfile`
-    - `docker-compose.yml`
-    - `requirements.txt`
-    - `run.py`
-    - Folder `app/`
+3.  Clone repository Anda menggunakan **SSH URL**:
+    ```bash
+    # Hapus file default jika ada
+    rm -rf * .git
+
+    # Clone (GANTI username dan nama-repo)
+    git clone git@github.com:username/nama-repo.git .
+    ```
+    *Titik (.) di akhir perintah penting agar file di-clone langsung ke folder saat ini, bukan membuat folder baru.*
 
 4.  Buat file `.env` untuk production:
     ```bash
@@ -105,7 +142,7 @@ Lakukan langkah ini sebagai user aplikasi (misal: `dracinsubindo`).
 
 ---
 
-## Bagian 3: Menjalankan Aplikasi
+## Bagian 4: Menjalankan Aplikasi
 
 Masih sebagai **user** (`dracinsubindo`) di folder `/home/dracinsubindo/htdocs/dracinsubindo.me`:
 
@@ -128,7 +165,7 @@ Masih sebagai **user** (`dracinsubindo`) di folder `/home/dracinsubindo/htdocs/d
 
 ---
 
-## Bagian 4: Konfigurasi CloudPanel (Reverse Proxy)
+## Bagian 5: Konfigurasi CloudPanel (Reverse Proxy)
 
 Agar website bisa diakses publik via HTTPS:
 
