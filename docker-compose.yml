@@ -9,6 +9,7 @@ services:
     volumes:
       - ./instance:/app/instance
       - ./migrations:/app/migrations
+      - ./app/static:/app/app/static # Mount static files agar bisa diakses Nginx Host
       # Uncomment baris di bawah ini saat development agar perubahan kode langsung terlihat
       # - .:/app
     env_file:
