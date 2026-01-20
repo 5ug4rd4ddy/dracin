@@ -138,7 +138,7 @@ Lakukan langkah ini sebagai user aplikasi (misal: `dracinsubindo`).
     # Trakteer
     TRAKTEER_WEBHOOK_TOKEN=token_anda
     ```
-    *Catatan: IP `172.17.0.1` adalah IP gateway default Docker untuk mengakses service di host (MySQL CloudPanel).*
+    *Catatan: `host.docker.internal` akan otomatis diarahkan ke IP host server.*
 
 ---
 
