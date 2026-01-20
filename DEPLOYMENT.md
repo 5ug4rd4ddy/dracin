@@ -127,9 +127,14 @@ Lakukan langkah ini sebagai user aplikasi (misal: `dracinsubindo`).
     SECRET_KEY=ganti_dengan_random_string_panjang_dan_rahasia
 
     # KONEKSI DATABASE
-    # Penting: Jika menggunakan MySQL CloudPanel dari dalam Docker, gunakan IP host (biasanya 172.17.0.1)
-    # Format: mysql+pymysql://user:password@172.17.0.1/nama_database
-    SQLALCHEMY_DATABASE_URI=mysql+pymysql://nama_user_db:password_db@172.17.0.1/nama_database
+    # Karena kita sudah set extra_hosts di docker-compose.yml, kita bisa pakai host.docker.internal
+    # Format: mysql+pymysql://user:password@host.docker.internal/nama_database
+    SQLALCHEMY_DATABASE_URI=mysql+pymysql://nama_user_db:password_db@host.docker.internal/nama_database
+
+    # PENTING:
+    # Di CloudPanel -> Databases -> User Management:
+    # Pastikan user database diizinkan connect dari "Any" (%) atau IP Docker.
+    # Jika defaultnya "localhost", koneksi dari Docker akan DITOLAK.
 
     # Google OAuth (Wajib HTTPS)
     GOOGLE_CLIENT_ID=client_id_anda
@@ -165,7 +170,7 @@ Masih sebagai **user** (`dracinsubindo`) di folder `/home/dracinsubindo/htdocs/d
 
 ---
 
-## Bagian 4: Konfigurasi CloudPanel (Reverse Proxy)
+## Bagian 5: Konfigurasi CloudPanel (Reverse Proxy)
 
 Agar website bisa diakses publik via HTTPS:
 
@@ -180,27 +185,56 @@ Agar website bisa diakses publik via HTTPS:
 
 ---
 
-## Maintenance & Update
+## Maintenance & Update (Zero-Downtime Strategy)
 
-Setiap kali Anda mengubah kode (push ke git atau upload file baru):
+### Apakah ada Downtime?
+Ya, dengan cara biasa (`docker compose up -d --build`), downtime terjadi selama proses build + restart (bisa 1-2 menit).
+Namun, kita bisa meminimalkan downtime menjadi **hanya beberapa detik** (hanya saat restart container) dengan strategi **Build-First**.
 
-1.  Login SSH sebagai user.
-2.  Masuk direktori:
+### Cara Deploy Cepat (Recommended)
+Saya telah membuatkan script `deploy.sh` untuk mengotomatisasi proses ini.
+
+1.  Login ke server.
+2.  Masuk ke folder aplikasi.
+3.  Berikan izin eksekusi script (hanya sekali):
     ```bash
-    cd /home/dracinsubindo/htdocs/dracinsubindo.me
+    chmod +x deploy.sh
     ```
-3.  Pull kode terbaru (jika pakai git) atau upload file baru.
-4.  Rebuild container:
+4.  Jalankan deployment:
     ```bash
-    docker compose up -d --build
+    ./deploy.sh
     ```
 
-**Melihat Logs Error:**
-```bash
-docker compose logs -f
-```
+**Apa yang dilakukan script ini?**
+1.  `git pull` (Ambil kode baru).
+2.  `docker compose build` (Build image baru di background **sementara website masih hidup**).
+3.  `docker compose up -d` (Matikan container lama & nyalakan yang baru -> Downtime ~3 detik).
+4.  `docker image prune` (Hapus sampah image lama).
 
-**Restart Aplikasi:**
-```bash
-docker compose restart
-```
+---
+
+### FAQ: Bisakah 100% Zero-Downtime?
+Untuk mencapai **benar-benar 0 detik** downtime, arsitekturnya harus diubah menjadi **Blue-Green Deployment**:
+1.  Perlu menjalankan 2 container sekaligus.
+2.  Perlu Load Balancer internal (Nginx) di depan container.
+3.  Kompleksitasnya tinggi dan memakan resource RAM 2x lipat.
+
+**Saran:** Untuk skala saat ini, downtime 3 detik menggunakan `deploy.sh` sudah sangat ideal dan tidak mengganggu user.
+
+---
+
+### Troubleshooting
+
+**1. Error: permission denied while trying to connect to the Docker daemon socket**
+Ini terjadi karena user Anda belum masuk ke grup `docker`.
+
+**Solusi:**
+1.  Jalankan perintah ini (membutuhkan akses root atau sudo):
+    ```bash
+    sudo usermod -aG docker $USER
+    ```
+2.  **PENTING:** Anda harus **LOGOUT** dari SSH dan **LOGIN KEMBALI** agar perubahan grup diterapkan.
+3.  Cek apakah sudah berhasil dengan mengetik `groups`. Harus ada `docker` di outputnya.
+
+**2. Error: Can't connect to MySQL server**
+Pastikan di CloudPanel user database diizinkan connect dari IP manapun (`%`) atau IP gateway Docker.
