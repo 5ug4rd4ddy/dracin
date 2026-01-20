@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, abort, Response, stream_with_context, redirect, url_for, jsonify
 from flask_login import login_required, current_user
-from app import db
+from app import db, cache
 from app.models import Movie, Episode, SubscriptionPlan, Favorite, SiteSettings, Transaction
+from sqlalchemy.orm import subqueryload
 from datetime import datetime, timedelta
 import requests
 import urllib3
@@ -48,6 +49,7 @@ def search():
     page = request.args.get('page', 1, type=int)
     
     if query:
+        # Optimasi N+1 dengan subqueryload
         movies = Movie.query.options(subqueryload(Movie.episodes)).filter(Movie.title.ilike(f'%{query}%')).order_by(Movie.created_at.desc()).paginate(page=page, per_page=12)
     else:
         movies = None
