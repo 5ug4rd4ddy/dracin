@@ -3,8 +3,9 @@ services:
     build: .
     container_name: dracinlovers_app
     restart: always
-    ports:
-      - "5002:5002"
+    # Menggunakan network mode host agar bisa akses MySQL localhost server secara langsung
+    # Tanpa perlu setup gateway IP yang rumit
+    network_mode: "host"
     volumes:
       - ./instance:/app/instance
       - ./migrations:/app/migrations
@@ -15,5 +16,3 @@ services:
     environment:
       - FLASK_APP=run.py
       - FLASK_ENV=production
-    extra_hosts:
-      - "host.docker.internal:host-gateway"

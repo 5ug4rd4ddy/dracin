@@ -127,14 +127,13 @@ Lakukan langkah ini sebagai user aplikasi (misal: `dracinsubindo`).
     SECRET_KEY=ganti_dengan_random_string_panjang_dan_rahasia
 
     # KONEKSI DATABASE
-    # Karena kita sudah set extra_hosts di docker-compose.yml, kita bisa pakai host.docker.internal
-    # Format: mysql+pymysql://user:password@host.docker.internal/nama_database
-    SQLALCHEMY_DATABASE_URI=mysql+pymysql://nama_user_db:password_db@host.docker.internal/nama_database
+    # Karena kita menggunakan network_mode: "host" di docker-compose,
+    # Container bisa mengakses localhost server secara langsung.
+    SQLALCHEMY_DATABASE_URI=mysql+pymysql://nama_user_db:password_db@127.0.0.1/nama_database
 
     # PENTING:
-    # Di CloudPanel -> Databases -> User Management:
-    # Pastikan user database diizinkan connect dari "Any" (%) atau IP Docker.
-    # Jika defaultnya "localhost", koneksi dari Docker akan DITOLAK.
+    # Di CloudPanel, pastikan User Database diizinkan akses dari "127.0.0.1" atau "localhost".
+    # Ini adalah konfigurasi default dan paling aman.
 
     # Google OAuth (Wajib HTTPS)
     GOOGLE_CLIENT_ID=client_id_anda
@@ -167,6 +166,12 @@ Masih sebagai **user** (`dracinsubindo`) di folder `/home/dracinsubindo/htdocs/d
     docker compose exec web flask db upgrade
     ```
     *Jika error "Can't connect to MySQL server", pastikan user database di CloudPanel diizinkan akses dari `%` atau IP Docker, dan password benar.*
+
+**Restart Aplikasi:**
+```bash
+docker compose restart
+```
+*Gunakan perintah ini jika Anda hanya mengubah file `.env` (konfigurasi) tanpa mengubah kode aplikasi.*
 
 ---
 
@@ -225,7 +230,26 @@ Untuk mencapai **benar-benar 0 detik** downtime, arsitekturnya harus diubah menj
 
 ### Troubleshooting
 
-**1. Error: permission denied while trying to connect to the Docker daemon socket**
+**1. Cara Cek Log Error (Debugging)**
+Jika website tidak bisa dibuka atau error 500, cek log aplikasi dengan perintah ini:
+
+*   **Lihat log real-time (streaming):**
+    ```bash
+    docker compose logs -f
+    ```
+    *(Tekan `Ctrl+C` untuk berhenti)*
+
+*   **Lihat 100 baris terakhir (jika log kepanjangan):**
+    ```bash
+    docker compose logs --tail=100
+    ```
+
+*   **Analisa Error Umum:**
+    *   `ModuleNotFoundError`: Ada library kurang di `requirements.txt`.
+    *   `OperationalError`: Gagal konek ke database (cek password/host).
+    *   `Restarting ...`: Aplikasi crash saat startup (cek log segera).
+
+**2. Error: permission denied while trying to connect to the Docker daemon socket**
 Ini terjadi karena user Anda belum masuk ke grup `docker`.
 
 **Solusi:**
