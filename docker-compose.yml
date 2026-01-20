@@ -4,7 +4,7 @@ services:
     container_name: dracinlovers_app
     restart: always
     ports:
-      - "8000:8000"
+      - "5002:5002"
     volumes:
       - ./instance:/app/instance
       - ./migrations:/app/migrations

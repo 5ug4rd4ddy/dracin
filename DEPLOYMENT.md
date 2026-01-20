@@ -165,7 +165,7 @@ Masih sebagai **user** (`dracinsubindo`) di folder `/home/dracinsubindo/htdocs/d
 
 ---
 
-## Bagian 5: Konfigurasi CloudPanel (Reverse Proxy)
+## Bagian 4: Konfigurasi CloudPanel (Reverse Proxy)
 
 Agar website bisa diakses publik via HTTPS:
 
@@ -174,7 +174,7 @@ Agar website bisa diakses publik via HTTPS:
 3.  Pilih **Create a Docker Proxy Site**.
 4.  Isi form:
     - **Domain Name**: `dracinsubindo.me`
-    - **Proxy Pass**: `http://127.0.0.1:8000`
+    - **Proxy Pass**: `http://127.0.0.1:5002`
 5.  Klik **Create**.
 6.  Masuk ke tab **SSL/TLS**, aktifkan Let's Encrypt untuk HTTPS.
 

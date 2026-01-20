@@ -30,7 +30,7 @@ COPY . .
 RUN mkdir -p instance
 
 # Expose port yang digunakan Gunicorn
-EXPOSE 8000
+EXPOSE 5002
 
 # Command untuk menjalankan aplikasi
 CMD ["gunicorn", "-c", "gunicorn_config.py", "run:app"]
