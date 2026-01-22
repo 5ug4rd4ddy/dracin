@@ -266,8 +266,12 @@ def approve_transaction(id):
                 # Ensure we don't start from the past if expired long ago
                 if current_expiry < datetime.utcnow():
                     current_expiry = datetime.utcnow()
-                    
-                user.subscription_end_date = current_expiry + timedelta(days=plan.duration_days)
+                
+                try:
+                    user.subscription_end_date = current_expiry + timedelta(days=plan.duration_days)
+                except OverflowError:
+                    # Cap at a reasonable max date (e.g., year 9999)
+                    user.subscription_end_date = datetime(9999, 12, 31, 23, 59, 59)
             
         db.session.commit()
         flash('Transaction approved', 'success')
