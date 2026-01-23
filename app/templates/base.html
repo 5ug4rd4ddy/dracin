@@ -55,6 +55,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
         tailwind.config = {
@@ -96,6 +97,16 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
     </style>
+    <script>
+        // Force dark mode
+        if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+            Telegram.WebApp.setHeaderColor('#0A0A0B');
+            Telegram.WebApp.setBackgroundColor('#0A0A0B');
+            document.documentElement.classList.add('dark');
+        } else {
+             document.documentElement.classList.add('dark');
+        }
+    </script>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen">
     
@@ -188,6 +199,77 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
+            }
+        }
+    </script>
+    <script>
+        // Initialize Telegram Web App
+        if (window.Telegram && window.Telegram.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            
+            // Check if we are running inside Telegram
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                // Add a class to body for CSS styling specific to Telegram
+                document.body.classList.add('telegram-webapp');
+                
+                // Silent Auth
+                // Check if user is NOT logged in (server-side check injection)
+                const isUserLoggedIn = {{ 'true' if current_user.is_authenticated else 'false' }};
+                
+                if (!isUserLoggedIn) {
+                    // Show loading overlay
+                    const overlay = document.createElement('div');
+                    overlay.id = 'tg-auth-overlay';
+                    overlay.style.position = 'fixed';
+                    overlay.style.top = '0';
+                    overlay.style.left = '0';
+                    overlay.style.width = '100%';
+                    overlay.style.height = '100%';
+                    overlay.style.backgroundColor = 'rgba(0,0,0,0.9)';
+                    overlay.style.zIndex = '9999';
+                    overlay.style.display = 'flex';
+                    overlay.style.justifyContent = 'center';
+                    overlay.style.alignItems = 'center';
+                    overlay.style.color = 'white';
+                    overlay.innerHTML = '<div class="text-center"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto mb-4"></div><p>Logging in via Telegram...</p></div>';
+                    document.body.appendChild(overlay);
+
+                    fetch('/auth/telegram/auth', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            initData: tg.initData,
+                            parsedData: tg.initDataUnsafe
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.status === 'success') {
+                            console.log('Telegram login success');
+                            window.location.reload();
+                        } else {
+                            console.error('Telegram login failed', data);
+                            // Remove overlay if failed so user can try manual or see error
+                            document.getElementById('tg-auth-overlay').remove();
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Auth error', err);
+                        document.getElementById('tg-auth-overlay').remove();
+                    });
+                }
+                
+                // Apply Telegram Theme
+                if (tg.colorScheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
             }
         }
     </script>

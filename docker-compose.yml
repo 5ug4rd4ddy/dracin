@@ -17,3 +17,14 @@ services:
     environment:
       - FLASK_APP=run.py
       - FLASK_ENV=production
+
+  bot:
+    build: .
+    container_name: dracinlovers_bot
+    restart: always
+    network_mode: "host"
+    command: python bot.py
+    env_file:
+      - .env
+    depends_on:
+      - web

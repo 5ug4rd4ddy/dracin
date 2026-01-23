@@ -140,10 +140,6 @@ def watch(episode_id):
 def subscribe():
     return redirect(url_for('main.profile', _anchor='pricing'))
 
-@main_bp.route('/pricing')
-def pricing():
-    return redirect(url_for('main.profile', _anchor='pricing'))
-
 @main_bp.route('/proxy')
 def proxy():
     url = request.args.get('url')

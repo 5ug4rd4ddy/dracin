@@ -39,7 +39,9 @@
                         {{ current_user.name[:1].upper() }}
                     </div>
                 </a>
+                {% if not session.get('is_tma') %}
                 <a href="{{ url_for('auth.logout') }}" class="ml-2 text-xs text-red-500 hover:underline">Logout</a>
+                {% endif %}
             </div>
             {% else %}
             <a href="{{ url_for('auth.login') }}" class="px-4 py-2 bg-primary text-black font-bold rounded-lg hover:bg-yellow-400 transition-colors">Login</a>

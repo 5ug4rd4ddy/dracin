@@ -51,7 +51,7 @@
                             <p class="text-slate-400 font-medium mb-1">Free Plan</p>
                             <p class="text-sm text-slate-500">Upgrade to unlock all premium content</p>
                         </div>
-                        <a href="{{ url_for('main.pricing') }}" class="bg-primary hover:bg-yellow-400 text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
+                        <a href="#pricing" class="bg-primary hover:bg-yellow-400 text-black px-4 py-2 rounded-lg text-sm font-bold transition-colors">
                             Upgrade Now
                         </a>
                     </div>
@@ -78,12 +78,14 @@
                     <span class="material-symbols-outlined text-slate-600 group-hover:text-white transition-colors">chevron_right</span>
                 </a>
 
+                {% if not session.get('is_tma') %}
                 <a href="{{ url_for('auth.logout') }}" class="flex items-center justify-between p-4 rounded-xl bg-surface-dark hover:bg-red-500/10 hover:border-red-500/50 border border-transparent transition-all group mt-4">
                     <div class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-slate-400 group-hover:text-red-500 transition-colors">logout</span>
                         <span class="text-slate-300 group-hover:text-red-400 transition-colors">Logout</span>
                     </div>
                 </a>
+                {% endif %}
             </div>
 
             <!-- Pricing Plans -->

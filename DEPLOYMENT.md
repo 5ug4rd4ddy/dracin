@@ -150,7 +150,7 @@ Lakukan langkah ini sebagai user aplikasi (misal: `dracinsubindo`).
 
 Masih sebagai **user** (`dracinsubindo`) di folder `/home/dracinsubindo/htdocs/dracinsubindo.me`:
 
-1.  Build dan jalankan container:
+1.  Build dan jalankan container (Web & Bot):
     ```bash
     docker compose up -d --build
     ```
@@ -159,7 +159,7 @@ Masih sebagai **user** (`dracinsubindo`) di folder `/home/dracinsubindo/htdocs/d
     ```bash
     docker compose ps
     ```
-    *Status harus `Up`.*
+    *Status harus `Up` untuk `dracinlovers_app` (web) dan `dracinlovers_bot` (bot).*
 
 3.  Jalankan migrasi database (untuk membuat tabel):
     ```bash
@@ -212,9 +212,10 @@ Saya telah membuatkan script `deploy.sh` untuk mengotomatisasi proses ini.
 
 **Apa yang dilakukan script ini?**
 1.  `git pull` (Ambil kode baru).
-2.  `docker compose build` (Build image baru di background **sementara website masih hidup**).
-3.  `docker compose up -d` (Matikan container lama & nyalakan yang baru -> Downtime ~3 detik).
-4.  `docker image prune` (Hapus sampah image lama).
+2.  `docker compose build` (Build image baru untuk Web & Bot di background).
+3.  `docker compose up -d` (Restart container Web & Bot -> Downtime ~3 detik).
+4.  `flask db upgrade` (Jalankan migrasi database otomatis jika ada perubahan schema).
+5.  `docker image prune` (Hapus sampah image lama).
 
 ---
 

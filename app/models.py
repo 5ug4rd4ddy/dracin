@@ -10,6 +10,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255))
     google_id = db.Column(db.String(255))
+    telegram_id = db.Column(db.String(50), unique=True, nullable=True)
     profile_pic = db.Column(db.String(255))
     role = db.Column(db.Enum('admin', 'customer'), default='customer')
     subscription_end_date = db.Column(db.DateTime, nullable=True)

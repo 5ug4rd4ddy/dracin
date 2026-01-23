@@ -14,10 +14,14 @@ echo "🔨 Building new image..."
 docker compose build
 
 # 3. Ganti container (Downtime terjadi di sini, hanya beberapa detik)
-echo "🔄 Recreating container..."
+echo "🔄 Recreating containers (Web & Bot)..."
 docker compose up -d
 
-# 4. Hapus image lama yang tidak terpakai (bersih-bersih)
+# 4. Jalankan Migrasi Database Otomatis
+echo "🗄️ Running database migrations..."
+docker compose exec -T web flask db upgrade
+
+# 5. Hapus image lama yang tidak terpakai (bersih-bersih)
 echo "🧹 Cleaning up old images..."
 docker image prune -f
 
