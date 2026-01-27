@@ -103,6 +103,58 @@
             Telegram.WebApp.setHeaderColor('#0A0A0B');
             Telegram.WebApp.setBackgroundColor('#0A0A0B');
             document.documentElement.classList.add('dark');
+
+            // Telegram Mini App Auto-Login Logic
+            document.addEventListener('DOMContentLoaded', function() {
+                if (Telegram.WebApp.initData) {
+                    Telegram.WebApp.ready();
+                    Telegram.WebApp.expand();
+
+                    // Handle Login Page Elements
+                    const googleBtn = document.getElementById('google-login-btn');
+                    const loadingState = document.getElementById('telegram-loading');
+                    
+                    if (googleBtn) {
+                        googleBtn.style.display = 'none';
+                    }
+                    if (loadingState) {
+                        loadingState.classList.remove('hidden');
+                        loadingState.classList.add('flex');
+                    }
+
+                    // Check auth status
+                    const isUserAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+
+                    if (!isUserAuthenticated) {
+                        fetch("{{ url_for('auth.telegram_auth') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRFToken": document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                initData: Telegram.WebApp.initData,
+                                parsedData: Telegram.WebApp.initDataUnsafe
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                window.location.reload();
+                            } else {
+                                console.error('Telegram Auth Failed:', data);
+                                if (loadingState) {
+                                    loadingState.innerHTML = '<p class="text-red-500 font-bold">Authentication Failed</p><p class="text-xs text-slate-500 mt-1">Please try restarting the bot</p>';
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Auth Error:', err);
+                        });
+                    }
+                }
+            });
+
         } else {
              document.documentElement.classList.add('dark');
         }

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Edit User - {{ user.name }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <div class="max-w-2xl mx-auto bg-card-dark rounded-xl shadow-lg p-8 border border-slate-800">
+        <h2 class="text-2xl font-bold text-white mb-6">Edit User: {{ user.name }}</h2>
+        
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            
+            <div class="mb-6">
+                <label class="block text-gray-400 text-sm font-bold mb-2">Email</label>
+                <input type="text" value="{{ user.email }}" disabled
+                    class="w-full bg-surface-dark text-gray-500 border border-slate-700 rounded py-3 px-4 leading-tight focus:outline-none cursor-not-allowed">
+                <p class="text-xs text-gray-500 mt-1">Email cannot be changed manually.</p>
+            </div>
+
+            <div class="mb-6">
+                <label for="role" class="block text-gray-300 text-sm font-bold mb-2">Role</label>
+                <select name="role" id="role" class="w-full bg-surface-dark text-white border border-slate-600 rounded py-3 px-4 leading-tight focus:outline-none focus:border-primary">
+                    <option value="customer" {% if user.role == 'customer' %}selected{% endif %}>Customer</option>
+                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+                <p class="text-xs text-gray-400 mt-1">Admins have full access to the dashboard.</p>
+            </div>
+
+            <div class="flex items-center justify-end gap-4">
+                <a href="{{ url_for('admin.users') }}" class="text-gray-400 hover:text-white">Cancel</a>
+                <button type="submit" class="bg-primary text-black font-bold py-2 px-6 rounded hover:bg-yellow-400 transition-colors">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,10 +1,15 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, Response, stream_with_context
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 from app.models import db, Movie, Episode, User, Transaction, SubscriptionPlan, SiteSettings
 from app.decorators import admin_required
 from datetime import datetime, timedelta
 import os
+import requests
+import urllib3
+
+# Suppress InsecureRequestWarning
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -178,6 +183,61 @@ def delete_episode(id):
     flash('Episode deleted successfully', 'success')
     return redirect(url_for('admin.movie_episodes', movie_id=movie_id))
 
+@admin_bp.route('/episodes/download/<int:id>')
+@login_required
+@admin_required
+def download_episode(id):
+    episode = Episode.query.get_or_404(id)
+    url = episode.video_url
+    
+    if not url:
+        flash('No video URL found for this episode', 'error')
+        return redirect(url_for('admin.movie_episodes', movie_id=episode.movie_id))
+    
+    # Headers required by the upstream server
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:146.0) Gecko/20100101 Firefox/146.0",
+        "Accept": "video/webm,video/ogg,video/*;q=0.9,application/ogg;q=0.7,audio/*;q=0.6,*/*;q=0.5",
+        "Accept-Language": "en-CA,en-US;q=0.7,en;q=0.3",
+        "Origin": "https://www.dracinlovers.com",
+        "Referer": "https://www.dracinlovers.com/",
+        "Sec-Fetch-Dest": "video",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "cross-site",
+        "Priority": "u=4",
+        "Te": "trailers"
+    }
+    
+    try:
+        req = requests.get(url, headers=headers, stream=True, verify=False)
+        
+        # Determine filename
+        ext = 'mp4' # Default
+        if '.' in url.split('/')[-1]:
+            ext = url.split('/')[-1].split('.')[-1].split('?')[0]
+            
+        safe_title = secure_filename(f"{episode.movie.title} - EP{episode.episode_number}")
+        filename = f"{safe_title}.{ext}"
+
+        # Exclude some headers
+        excluded_headers = ['content-encoding', 'content-length', 'transfer-encoding', 'connection']
+        resp_headers = [(name, value) for (name, value) in req.headers.items()
+                       if name.lower() not in excluded_headers]
+        
+        # Add Content-Disposition to force download
+        resp_headers.append(('Content-Disposition', f'attachment; filename="{filename}"'))
+        
+        if 'Content-Length' in req.headers:
+            resp_headers.append(('Content-Length', req.headers['Content-Length']))
+            
+        return Response(stream_with_context(req.iter_content(chunk_size=1024*16)), 
+                       status=req.status_code, 
+                       headers=resp_headers)
+                       
+    except requests.exceptions.RequestException as e:
+        flash(f"Error fetching URL: {str(e)}", 'error')
+        return redirect(url_for('admin.movie_episodes', movie_id=episode.movie_id))
+
 # --- Plans CRUD ---
 
 @admin_bp.route('/plans')
@@ -240,6 +300,20 @@ def users():
     page = request.args.get('page', 1, type=int)
     users = User.query.order_by(User.created_at.desc()).paginate(page=page, per_page=20)
     return render_template('admin/users.html', users=users)
+
+@admin_bp.route('/users/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def edit_user(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        user.role = request.form.get('role')
+        # Optional: Allow editing other fields if needed, but priority is role
+        
+        db.session.commit()
+        flash('User updated successfully', 'success')
+        return redirect(url_for('admin.users'))
+    return render_template('admin/user_form.html', user=user)
 
 @admin_bp.route('/transactions')
 @login_required

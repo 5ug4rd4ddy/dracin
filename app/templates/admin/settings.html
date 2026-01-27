@@ -3,15 +3,20 @@
 {% block title %}Site Settings - Admin Dashboard{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-6 py-12">
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-white">Site Settings</h1>
-        <a href="{{ url_for('admin.dashboard') }}" class="text-slate-400 hover:text-white transition-colors">
-            <span class="material-symbols-outlined">arrow_back</span> Back to Dashboard
-        </a>
+<div class="container mx-auto px-6 py-8">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+        <div>
+            <div class="flex items-center gap-2 mb-2">
+                <a href="{{ url_for('admin.dashboard') }}" class="text-gray-400 hover:text-white">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+                <h2 class="text-3xl font-bold text-white">Site Settings</h2>
+            </div>
+            <p class="text-gray-400 text-lg ml-8">Configure global site options</p>
+        </div>
     </div>
 
-    <div class="bg-card-dark rounded-xl border border-slate-800 p-8">
+    <div class="bg-card-dark rounded-xl shadow-lg p-8">
         <form method="POST" enctype="multipart/form-data" class="space-y-6">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <!-- General Settings -->
