@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from app.models import db, Movie, Episode, User, Transaction, SubscriptionPlan, SiteSettings
 from app.decorators import admin_required
 from datetime import datetime, timedelta
+from sqlalchemy import func
 import os
 import requests
 import urllib3
@@ -26,7 +27,8 @@ def dashboard():
     total_users = User.query.count()
     total_movies = Movie.query.count()
     total_transactions = Transaction.query.count()
-    return render_template('admin/dashboard.html', total_users=total_users, total_movies=total_movies, total_transactions=total_transactions)
+    total_omset = db.session.query(func.sum(Transaction.amount)).filter(Transaction.status == 'paid').scalar() or 0
+    return render_template('admin/dashboard.html', total_users=total_users, total_movies=total_movies, total_transactions=total_transactions, total_omset=total_omset)
 
 @admin_bp.route('/settings', methods=['GET', 'POST'])
 @login_required

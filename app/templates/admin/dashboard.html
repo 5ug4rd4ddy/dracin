@@ -7,6 +7,15 @@
     <h2 class="text-3xl font-bold text-white mb-8">Admin Dashboard</h2>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Revenue Card -->
+        <div class="bg-card-dark p-6 rounded-xl shadow-lg border border-surface-dark hover:border-green-500 transition-colors group relative overflow-hidden">
+            <div class="relative z-10">
+                <h5 class="text-gray-400 font-medium mb-2">Total Omset (Paid)</h5>
+                <p class="text-3xl font-bold text-white mb-4">Rp {{ "{:,.0f}".format(total_omset).replace(',', '.') }}</p>
+            </div>
+            <span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-surface-dark group-hover:text-gray-800 transition-colors opacity-50">monetization_on</span>
+        </div>
+
         <!-- Movies Card -->
         <div class="bg-card-dark p-6 rounded-xl shadow-lg border border-surface-dark hover:border-primary transition-colors group relative overflow-hidden">
             <div class="relative z-10">
