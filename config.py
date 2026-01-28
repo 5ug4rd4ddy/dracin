@@ -17,6 +17,7 @@ class Config:
     TRAKTEER_UNIT_ID = os.getenv('TRAKTEER_UNIT_ID')
     TRAKTEER_UNIT_PRICE = os.getenv('TRAKTEER_UNIT_PRICE')
     TRAKTEER_WEBHOOK_TOKEN = os.getenv('TRAKTEER_WEBHOOK_TOKEN')
+    TRAKTEER_OVERRIDE_EMAIL = os.getenv('TRAKTEER_OVERRIDE_EMAIL')
 
     # Cache Configuration
     CACHE_TYPE = 'SimpleCache'

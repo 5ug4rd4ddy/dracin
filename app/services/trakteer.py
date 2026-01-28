@@ -14,6 +14,7 @@ class TrakteerService:
         self.unit_price = int(price) if price else 5000
         
         self.webhook_token = current_app.config.get('TRAKTEER_WEBHOOK_TOKEN')
+        self.override_email = current_app.config.get('TRAKTEER_OVERRIDE_EMAIL')
         self.user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 
     def get_qris(self, order_id, total_amount, email):
@@ -31,13 +32,20 @@ class TrakteerService:
         # Use first 8 chars of ID for shorter identifiers
         # order_id might be int, convert to str
         short_order_id = str(order_id)[:8]
+        order_id_str = str(order_id)
 
         # Unique Email Construction
-        if '@' in email:
-            user, domain = email.split('@')
-            target_email = f"{user}+{short_order_id}@{domain}"
+        # Logic: If override email is set, use it (e.g. admin+123@toko.com)
+        # Otherwise use customer email (e.g. customer+123@gmail.com)
+        
+        target_email = email
+        base_email = self.override_email if self.override_email else email
+        
+        if '@' in base_email:
+            user_part, domain_part = base_email.split('@')
+            target_email = f"{user_part}+{order_id_str}@{domain_part}"
         else:
-            target_email = email
+            target_email = base_email
 
         target_url = f"https://trakteer.id/{self.creator_username}"
         api_url = "https://api.trakteer.id/v2/fe/pay/xendit/qris"
