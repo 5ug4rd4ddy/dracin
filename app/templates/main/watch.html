@@ -5,7 +5,7 @@
 {% block content %}
 <!-- Video Player Section: Full Width & Top Aligned -->
 <div class="w-full bg-black mb-6">
-    <div class="relative w-full aspect-[16/9] md:aspect-video mx-auto max-w-[1920px]">
+    <div class="relative w-full aspect-[9/16] md:max-w-xl md:mx-auto">
         <video controls class="w-full h-full object-contain" poster="{{ url_for('main.proxy', url=movie.poster_url) }}" preload="metadata">
             <source src="{{ url_for('main.proxy', url=episode.video_url) }}" type="video/mp4">
             {% if episode.subtitle_url %}
