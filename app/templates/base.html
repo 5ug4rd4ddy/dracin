@@ -96,6 +96,14 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
+        
+        /* Telegram Mini App Specific Styles */
+        body.telegram-webapp header {
+            display: none !important;
+        }
+        body.telegram-webapp .pt-20 { /* Adjust padding if any element has pt-20 due to fixed header */
+            padding-top: 0 !important;
+        }
     </style>
     <script>
         // Force dark mode
@@ -165,17 +173,17 @@
     {% include 'includes/header.html' %}
 
     <main class="min-h-screen">
-        <div class="px-6 lg:px-12 py-4">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="px-6 lg:px-12 py-4">
                     {% for category, message in messages %}
                         <div class="p-4 mb-4 text-sm rounded-lg {% if category == 'success' %}bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-400{% else %}bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-400{% endif %}" role="alert">
                             {{ message }}
                         </div>
                     {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </div>
+                </div>
+            {% endif %}
+        {% endwith %}
 
         {% block content %}{% endblock %}
     </main>

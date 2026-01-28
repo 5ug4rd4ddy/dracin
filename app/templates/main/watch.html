@@ -3,18 +3,9 @@
 {% block title %}Watch {{ movie.title }} - Episode {{ episode.episode_number }}{% endblock %}
 
 {% block content %}
-<div class="px-6 lg:px-12 py-8 max-w-7xl mx-auto">
-    <!-- Header -->
-    <div class="mb-6">
-        <h1 class="text-3xl lg:text-4xl font-bold mb-2">{{ movie.title }}</h1>
-        <p class="text-xl text-primary font-semibold flex items-center gap-2">
-            <span class="material-symbols-outlined">play_circle</span>
-            Episode {{ episode.episode_number }}
-        </p>
-    </div>
-
-    <!-- Video Player -->
-    <div class="relative w-full aspect-[9/16] md:aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl shadow-primary/10 mb-8 border border-slate-800 group">
+<!-- Video Player Section: Full Width & Top Aligned -->
+<div class="w-full bg-black mb-6">
+    <div class="relative w-full aspect-[16/9] md:aspect-video mx-auto max-w-[1920px]">
         <video controls class="w-full h-full object-contain" poster="{{ url_for('main.proxy', url=movie.poster_url) }}" preload="metadata">
             <source src="{{ url_for('main.proxy', url=episode.video_url) }}" type="video/mp4">
             {% if episode.subtitle_url %}
@@ -22,6 +13,18 @@
             {% endif %}
             Your browser does not support the video tag.
         </video>
+    </div>
+</div>
+
+<!-- Info & Navigation Section -->
+<div class="px-6 lg:px-12 pb-12 max-w-7xl mx-auto">
+    <!-- Header (Moved below video) -->
+    <div class="mb-6">
+        <h1 class="text-3xl lg:text-4xl font-bold mb-2">{{ movie.title }}</h1>
+        <p class="text-xl text-primary font-semibold flex items-center gap-2">
+            <span class="material-symbols-outlined">play_circle</span>
+            Episode {{ episode.episode_number }}
+        </p>
     </div>
 
     <!-- Navigation & Controls -->
