@@ -322,8 +322,16 @@ def edit_user(id):
 @admin_required
 def transactions():
     page = request.args.get('page', 1, type=int)
-    transactions = Transaction.query.order_by(Transaction.created_at.desc()).paginate(page=page, per_page=20)
-    return render_template('admin/transactions.html', transactions=transactions)
+    status_filter = request.args.get('status', 'all')
+    
+    query = Transaction.query
+    
+    if status_filter != 'all':
+        query = query.filter_by(status=status_filter)
+        
+    transactions = query.order_by(Transaction.created_at.desc()).paginate(page=page, per_page=20)
+    
+    return render_template('admin/transactions.html', transactions=transactions, status_filter=status_filter)
 
 @admin_bp.route('/transaction/<int:id>/approve', methods=['POST'])
 @login_required

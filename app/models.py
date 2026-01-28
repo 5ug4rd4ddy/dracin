@@ -71,6 +71,8 @@ class Transaction(db.Model):
     payment_proof = db.Column(db.Text)
     qris_content = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref='transactions', lazy=True)
 
 class Favorite(db.Model):
     __tablename__ = 'favorites'

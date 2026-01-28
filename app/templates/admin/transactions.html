@@ -14,6 +14,29 @@
             </div>
             <p class="text-gray-400 text-lg ml-8">Total {{ transactions.total }} transactions</p>
         </div>
+        
+        <!-- Filter -->
+        <div class="flex items-center gap-2">
+            <span class="text-gray-400 text-sm">Status:</span>
+            <div class="flex bg-surface-dark rounded-lg p-1">
+                <a href="{{ url_for('admin.transactions', status='all') }}" 
+                   class="px-3 py-1 rounded text-sm transition-colors {{ 'bg-primary text-black font-bold' if status_filter == 'all' else 'text-gray-400 hover:text-white' }}">
+                    All
+                </a>
+                <a href="{{ url_for('admin.transactions', status='paid') }}" 
+                   class="px-3 py-1 rounded text-sm transition-colors {{ 'bg-green-600 text-white font-bold' if status_filter == 'paid' else 'text-gray-400 hover:text-white' }}">
+                    Paid
+                </a>
+                <a href="{{ url_for('admin.transactions', status='pending') }}" 
+                   class="px-3 py-1 rounded text-sm transition-colors {{ 'bg-yellow-600 text-white font-bold' if status_filter == 'pending' else 'text-gray-400 hover:text-white' }}">
+                    Pending
+                </a>
+                <a href="{{ url_for('admin.transactions', status='failed') }}" 
+                   class="px-3 py-1 rounded text-sm transition-colors {{ 'bg-red-600 text-white font-bold' if status_filter == 'failed' else 'text-gray-400 hover:text-white' }}">
+                    Failed
+                </a>
+            </div>
+        </div>
     </div>
 
     <div class="overflow-x-auto bg-card-dark rounded-xl shadow-lg">
@@ -21,7 +44,7 @@
             <thead class="uppercase tracking-wider border-b border-surface-dark text-gray-400">
                 <tr>
                     <th scope="col" class="px-6 py-4">ID</th>
-                    <th scope="col" class="px-6 py-4">User ID</th>
+                    <th scope="col" class="px-6 py-4">User Email</th>
                     <th scope="col" class="px-6 py-4">Amount</th>
                     <th scope="col" class="px-6 py-4">Status</th>
                     <th scope="col" class="px-6 py-4">Created At</th>
@@ -32,7 +55,12 @@
                 {% for t in transactions.items %}
                 <tr class="hover:bg-surface-dark transition-colors">
                     <td class="px-6 py-4">{{ t.id }}</td>
-                    <td class="px-6 py-4">{{ t.user_id }}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col">
+                            <span class="font-medium text-white">{{ t.user.email }}</span>
+                            <span class="text-xs text-gray-500">ID: {{ t.user_id }}</span>
+                        </div>
+                    </td>
                     <td class="px-6 py-4">Rp {{ "{:,.0f}".format(t.amount).replace(',', '.') }}</td>
                     <td class="px-6 py-4">
                         {% if t.status == 'paid' %}
