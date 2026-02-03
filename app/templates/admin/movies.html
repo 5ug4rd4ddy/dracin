@@ -14,9 +14,22 @@
             </div>
             <p class="text-gray-400 text-lg ml-8">Total {{ movies.total }} movies found</p>
         </div>
-        <a href="{{ url_for('admin.add_movie') }}" class="bg-primary text-black font-bold py-2 px-4 rounded hover:bg-yellow-400">
-            + Add New Movie
-        </a>
+        <div class="flex flex-col sm:flex-row gap-4">
+            <form action="{{ url_for('admin.movies') }}" method="GET" class="flex gap-2">
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Search movies..." class="bg-surface-dark text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-primary">
+                <button type="submit" class="bg-surface-dark text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center justify-center">
+                    <span class="material-symbols-outlined">search</span>
+                </button>
+                {% if search_query %}
+                <a href="{{ url_for('admin.movies') }}" class="bg-surface-dark text-white px-4 py-2 rounded hover:bg-gray-700 flex items-center justify-center" title="Clear search">
+                    <span class="material-symbols-outlined">close</span>
+                </a>
+                {% endif %}
+            </form>
+            <a href="{{ url_for('admin.add_movie') }}" class="bg-primary text-black font-bold py-2 px-4 rounded hover:bg-yellow-400 flex items-center justify-center whitespace-nowrap">
+                + Add New Movie
+            </a>
+        </div>
     </div>
 
     <div class="overflow-x-auto bg-card-dark rounded-xl shadow-lg">

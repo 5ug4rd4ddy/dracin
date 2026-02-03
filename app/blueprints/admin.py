@@ -78,8 +78,14 @@ def settings():
 @admin_required
 def movies():
     page = request.args.get('page', 1, type=int)
-    movies = Movie.query.order_by(Movie.created_at.desc()).paginate(page=page, per_page=20)
-    return render_template('admin/movies.html', movies=movies)
+    search_query = request.args.get('q', '')
+    
+    query = Movie.query
+    if search_query:
+        query = query.filter(Movie.title.ilike(f'%{search_query}%'))
+        
+    movies = query.order_by(Movie.created_at.desc()).paginate(page=page, per_page=20)
+    return render_template('admin/movies.html', movies=movies, search_query=search_query)
 
 @admin_bp.route('/movies/add', methods=['GET', 'POST'])
 @login_required
